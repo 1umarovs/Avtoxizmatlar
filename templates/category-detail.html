@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.css">
+
+    <main>
+        <div class="opacity"></div>
+        <section>
+            <div class="container">
+                <div class="category__list">
+                    <div class="category__left">
+                        <p id="title" class="title">
+                            Profil
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </p>
+                        <ul id="list">
+                            <li>
+                                <a href="#">
+                                    <p>Reklama (TEST)</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <p>Profil foto</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <p>Manzil</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <p>Shirkat haqida</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <p>Mutaxasislik</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <p>Gallereya</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="modalOpasitiy" onclick="closeModal()" class="modelOpasitiy"></div>
+                    <div id="modalContent" class="myModal">
+                        <p>
+                            <i onclick="closeModal()" class="fa-solid fa-x"></i>
+                        </p>
+                        <div class="top">
+                            <h5>avtoxizmatlar.uz</h5>
+                            <h4>{{workshop.phone1}}</h4>
+                            <b>Avtosoz</b>
+                            <p>Xizmat ko’rsatuvchiga uni avtoxizmatlar.uz dan topganingizni ayting</p>
+                        </div>
+                        <div class="bottom">
+                            <b>Qo’ng’iroq qilamizmi ?</b>
+                            <ul>
+                                <li>
+                                    <a href="tel:{{workshop.phone1}}">Ha</a>
+                                </li>
+                                <li>
+                                    <button onclick="closeModal()">Yo’q</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="category__items">
+                        <h2>Profil</h2>
+                        <p class="des">Profil e’lonlar oynasida</p>
+                        <div class="category__items__list">
+                            <div class="item">
+                                <div class="item__left">
+                                    <img src="{{ workshop.img.url }}" alt="">
+                                    <ul>
+                                        <li>
+                                            <i class="fa-solid fa-house"></i>
+                                            <p>2 ta joyda</p>
+                                        </li>
+                                        <li>
+                                            <i class="fa-solid fa-clock"></i>
+                                            <p>{{ workshop.open_time }}-{{ workshop.close_time }}</p>
+                                        </li>
+                                        <li>
+                                            <i class="fa-solid fa-credit-card"></i>
+                                            <p>Karta</p>
+                                        </li>
+                                        <li>
+                                            <i class="fa-solid fa-money-bill"></i>
+                                            <p>Naqd pul</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="item__right">
+                                    <div class="item__right__top">
+                                        <div class="reting">
+                                            <div class="titles">
+                                                <h3>{{ workshop.company_name }}</h3>
+                                                <b><span><i class="fa-solid fa-star"></i></span>{{ workshop.avg_rating }} reyting </b>
+                                            </div>
+                                            <p>{{ workshop.address }}</p>
+                                        </div>
+                                        <div class="categorys" data-count="{{ workshop.services.count }}">
+                                        <ul class="list1">
+                                            {% for service in workshop.services.all %}
+                                            <li class="{% if forloop.counter > 2 %}hidden{% endif %}">
+                                                <a href="{% url 'main:category' service.slug %}">{{ service.name }}</a>
+                                            </li>
+                                            {% endfor %}
+
+                                            {% if workshop.services.count > 2 %}
+                                            <li class="toggle-btn-li">
+                                            <a href="#" class="toggle-btn">Yana {{ workshop.services.count|add:"-2" }} ta xizmatlar</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                        <ul class="list2">
+                                            {% for service in workshop.services.all|slice:":2" %}
+                                            <li><span></span>kelishilgan holda</li>
+                                            {% endfor %}
+                                        </ul>
+                                        </div>
+                                    </div>
+                                    <div class="item__right__bottom" style="cursor: pointer;">
+                                        <a onclick="openModal()">
+                                            <i class="fa-solid fa-phone"></i>
+                                            Telefon
+                                        </a>
+                                        <a href="#">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            {{ workshop.landmark }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail__addres">
+                                <div id="address" class="title">
+                                    <h3>Manzillar</h3>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                            <ul class="detail__list">
+                                {% for branch in workshop.branch.all %}
+                                <li>
+                                <a href="{% url 'main:workshop_detail' branch.slug %}">
+                                    <p>{{ branch.company_name }}</p>
+                                </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            </div>
+                            <div class="detail__addres">
+                                <div id="info" class="title">
+                                    <h3>Xizmat ko’rsatuvchi haqida</h3>
+                                    <i id="info-icon" class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <ul id="info-list" class="detail__list">
+                                    <li>
+                                        <p>{{ abouts.about }}</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="detail__gallery">
+                                <div id="gallery" class="title">
+                                    <h3>Gallereya</h3>
+                                    <i id="gallery-icon" class="fa-solid fa-chevron-down"></i>
+                                </div>
+
+                                <div id="gallery-list" class="tz-gallery">
+                                    <ul class="gallery__list">
+                                        {% for image in gallery_images %}
+                                        <li>
+                                            <div class="thumbnail">
+                                                <a class="lightbox" href="{{ image.image.url }}">
+                                                    <img src="{{ image.image.url }}" alt="{{ workshop.company_name }}">
+                                                </a>
+                                            </div>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                            </div>
+                            <form class="detail__form" method="post">
+                                {% csrf_token %}
+                                <h3>Ushbu xizmat ko’rsatuvchi xizmatlarini baholang !</h3>
+                                <p>
+                                    <span class="star-rating">
+                                        <label for="rate-1" style="--i:1"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="rating" id="rate-1" value="1">
+                                        <label for="rate-2" style="--i:2"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="rating" id="rate-2" value="2" checked>
+                                        <label for="rate-3" style="--i:3"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="rating" id="rate-3" value="3">
+                                        <label for="rate-4" style="--i:4"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="rating" id="rate-4" value="4">
+                                        <label for="rate-5" style="--i:5"><i class="fa-solid fa-star"></i></label>
+                                        <input type="radio" name="rating" id="rate-5" value="5">
+                                    </span>
+                                </p>
+                                <input class="inp" type="text" name = "name" placeholder="Ismingiz">
+                                <textarea name="review" placeholder="Xizmat ko’rsatuvchi haqida fikrlaringiz"></textarea>
+                                <button type="submit">Baholash</button>
+                            </form>
+
+                        </div>
+                    </div>
+
+                    <div class="category__right">
+                        <ul>
+                            <div>
+                                <img src="{% static './assets/img/category/up.png' %}" alt="">
+                                <b>Mijozlar sonini oshiring</b>
+                                <p>
+                                    Reklama berish orqali xizmatlaringizni mijozlarga birinchilardan bo’lib taklif
+                                    qilishingiz
+                                    mumkin. <span>Hozirda bu servis ishga tushmadi.</span>
+                                </p>
+                                <a href="/">Reklama yoqish</a>
+                            </div>
+                        {% for review in reviews %}
+                            <li class="revews">
+                                <div class="items">
+                                    <img src="{% static './assets/img/home/register1.png' %}" alt="">
+                                    <div>
+                                        <p>{{ review.username }}</p>
+                                        <ul>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p class="text">{{ review.comment }}</p>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scroll Up Start -->
+        <div id="scrollUp" class="scrollUp">
+            <span>&uarr;</span>
+        </div>
+        <!-- Scroll Up End -->
+    </main>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.js"></script>
+    <script>
+        baguetteBox.run('.tz-gallery');
+    </script>
+
+    <style>
+  .hidden {
+    display: none;
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".categorys").forEach(function (categoryBlock) {
+    const toggleBtn = categoryBlock.querySelector(".toggle-btn");
+    if (!toggleBtn) return; // agar toggle yo‘q bo‘lsa, ishlama
+
+    const list1Items = categoryBlock.querySelectorAll(".list1 li");
+    const list2 = categoryBlock.querySelector(".list2");
+    const totalCount = parseInt(categoryBlock.dataset.count);
+
+    let expanded = false;
+
+    toggleBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      if (!expanded) {
+        list1Items.forEach((li, index) => {
+          if (index >= 2 && index < list1Items.length - 1) {
+            li.classList.remove("hidden");
+          }
+        });
+        list2.style.display = "none";
+        toggleBtn.textContent = "Yopish";
+        expanded = true;
+      } else {
+        list1Items.forEach((li, index) => {
+          if (index >= 2 && index < list1Items.length - 1) {
+            li.classList.add("hidden");
+          }
+        });
+        list2.style.display = "block";
+        const remaining = totalCount - 2;
+        toggleBtn.textContent = `Yana ${remaining} ta xizmatlar`;
+        expanded = false;
+      }
+    });
+  });
+});
+
+</script>
+
+
+{% endblock %}

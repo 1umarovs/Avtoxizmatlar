@@ -1,0 +1,367 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Kategoriyalar{% endblock %} {% block content %}
+
+<main>
+  <div class="opacity"></div>
+  <section>
+    <div class="container">
+      <div class="category__list">
+        <div class="category__left">
+          <p id="title" class="title">
+            Xizmat turlari
+            <i class="fa-solid fa-chevron-down"></i>
+          </p>
+<ul id="list">
+  {% for category in main_categories %}
+  <li>
+    <div class="category-toggle" onclick="toggleSubcategories('{{ category.slug }}')">
+      <i id="icon-{{ category.slug }}" class="fa-solid fa-chevron-right toggle-icon"></i>
+      <span style = "font-size: 18px">{{ category.name }}</span>
+    </div>
+    <ul id="subcat-{{ category.slug }}" class="subcategories" style="display: none; padding-left: 20px;"></ul>
+  </li>
+  {% endfor %}
+</ul>
+
+        </div>
+
+        <div class="category__items">
+          {% if category %}
+          <h2>{{ category.name }}</h2>
+          {% else %}
+          <h2>Barchasi</h2>
+          {% endif %}
+          <p class="des">Andijon shahri</p>
+          {% for item in workshops %}
+          <ul class="category__items__list">
+            <div
+              id="modalOpasitiy"
+              onclick="closeModal()"
+              class="modelOpasitiy"
+            ></div>
+            <div id="modalContent" class="myModal">
+              <p>
+                <i onclick="closeModal()" class="fa-solid fa-x"></i>
+              </p>
+              <div class="top">
+                <h5>avtoxizmatlar.uz</h5>
+                <h4>{{item.phone1}}</h4>
+                <b>{{item.company_name}}</b>
+                <p>
+                  Xizmat ko’rsatuvchiga uni avtoxizmatlar.uz dan topganingizni
+                  ayting
+                </p>
+              </div>
+              <div class="bottom">
+                <b>Qo’ng’iroq qilamizmi ?</b>
+                <ul>
+                  <li>
+                    <a href="tel:{{item.phone1}}">Ha</a>
+                  </li>
+                  <li>
+                    <button onclick="closeModal()">Yo’q</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <li class="item">
+              <div class="item__left">
+                <a href="{% url 'main:workshop_detail' item.slug %}">
+                  <img src="{{ item.img.url }}" alt="" />
+                </a>
+                <ul>
+                  <li>
+                    <i class="fa-solid fa-house"></i>
+                    <p>2 ta joyda</p>
+                  </li>
+                  <li>
+                    <i class="fa-solid fa-clock"></i>
+                    <p>{{item.open_time}}-{{item.close_time}}</p>
+                  </li>
+                  <li>
+                    <i class="fa-solid fa-credit-card"></i>
+                    <p>Karta</p>
+                  </li>
+                  <li>
+                    <i class="fa-solid fa-money-bill"></i>
+                    <p>Naqd pul</p>
+                  </li>
+                </ul>
+              </div>
+              <div class="item__right">
+                <div class="item__right__top">
+                  <div class="reting">
+                    <div class="titles">
+                      <a href="{% url 'main:workshop_detail' item.slug %}">
+                        <h3>{{ item.company_name }}</h3>
+                      </a>
+                      <b
+                        ><span><i class="fa-solid fa-star"></i></span>{{ item.avg_rating }} reyting
+                      </b>
+                    </div>
+                    <p><span>{{ item.landmark }}</span></p>
+                  </div>
+<div class="categorys" data-count="{{ item.services.count }}">
+  <ul class="list1">
+    {% for service in item.services.all %}
+      <li class="{% if forloop.counter > 2 %}hidden{% endif %}">
+        <a href="{% url 'main:category' service.slug %}">{{ service.name }}</a>
+      </li>
+    {% endfor %}
+    
+    {% if item.services.count > 2 %}
+    <li class="toggle-btn-li">
+      <a href="#" class="toggle-btn">Yana {{ item.services.count|add:"-2" }} ta xizmatlar</a>
+    </li>
+    {% endif %}
+  </ul>
+  <ul class="list2">
+    {% for service in item.services.all|slice:":2" %}
+      <li><span></span>kelishilgan holda</li>
+    {% endfor %}
+  </ul>
+</div>
+
+                </div>
+                <div class="item__right__bottom" style= "cursor: pointer;">
+                  <a onclick="openModal()">
+                    <i class="fa-solid fa-phone"></i>
+                    Telefon
+                  </a>
+                  <a href="#">
+                    <i class="fa-solid fa-location-dot"></i>
+                    {{ item.address }}
+                  </a>
+                </div>
+              </div>
+            </li>
+          </ul>
+          {% endfor %}
+        {% if workshops.paginator.num_pages > 1 %}
+        <ul class="pagin">
+            {# Oldingi tugma #}
+            {% if workshops.has_previous %}
+            <a href="?page={{ workshops.previous_page_number }}">
+                <li class="pagin__btn">
+                        <span><i class="fa-solid fa-chevron-left"></i></span>
+                    </li>
+                </a>
+            {% else %}
+                <li class="pagin__btn pagin__btn--disabled">
+                    <span><i class="fa-solid fa-chevron-left"></i></span>
+                </li>
+            {% endif %}
+
+            {# Raqamlar bilan sahifalar #}
+            {% for i in workshops.paginator.page_range %}
+                {% if i == workshops.number %}
+                    <li class="pagin__numbers paginActive">{{ i }}</li>
+                {% elif i <= workshops.number|add:'2' and i >= workshops.number|add:'-2' %}
+                <a href="?page={{ i }}">
+                    <li class="pagin__numbers">
+                        {{ i }}
+                    </li>
+                    </a>
+                {% elif i == 1 or i == workshops.paginator.num_pages %}
+                <a href="?page={{ i }}">
+                    <li class="pagin__numbers">
+                        {{ i }}
+                    </li>
+                    </a>
+                {% elif i == workshops.number|add:'-3' or i == workshops.number|add:'3' %}
+                    <li class="pagin__dots">...</li>
+                {% endif %}
+            {% endfor %}
+
+            {# Keyingi tugma #}
+            {% if workshops.has_next %}
+            <a href="?page={{ workshops.next_page_number }}">
+                <li class="pagin__btn">
+                        <span><i class="fa-solid fa-chevron-right"></i></span>
+                    </li>
+                </a>
+            {% else %}
+                <li class="pagin__btn pagin__btn--disabled">
+                    <span><i class="fa-solid fa-chevron-right"></i></span>
+                </li>
+            {% endif %}
+        </ul>
+        {% endif %}
+
+        </div>
+        <!-- Right Side -->
+
+        <div class="category__right">
+          <ul>
+            <div>
+              <img src="{% static './assets/img/category/up.png' %}" alt="" />
+              <b>Mijozlar sonini oshiring</b>
+              <p>
+                Reklama berish orqali xizmatlaringizni mijozlarga birinchilardan
+                bo’lib taklif qilishingiz mumkin.
+                <span>Hozirda bu servis ishga tushmadi.</span>
+              </p>
+              <a href="/">Reklama yoqish</a>
+            </div>
+          {% for review in reviews %}  
+            <li class="revews">
+              <div class="items">
+                <img src="{% static './assets/img/home/register1.png' %}" alt="" />
+                <div>
+                  <p>{{ review.username }}</p>
+                  <ul>
+                    <li class="star-act"><i class="fa-solid fa-star"></i></li>
+                    <li class="star-act"><i class="fa-solid fa-star"></i></li>
+                    <li><i class="fa-solid fa-star"></i></li>
+                    <li><i class="fa-solid fa-star"></i></li>
+                    <li><i class="fa-solid fa-star"></i></li>
+                  </ul>
+                </div>
+              </div>
+              <p class="text">
+                {{ review.comment }}
+              </p>
+
+              <p class="workshop">{{ review.workshop }}</p>
+
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scroll Up Start -->
+  <div id="scrollUp" class="scrollUp">
+    <span>&uarr;</span>
+  </div>
+  <!-- Scroll Up End -->
+</main>
+
+
+<style>
+  .workshop{
+    font-size: 10px;
+    color: red;
+  }
+  .hidden {
+    display: none;
+  }
+    .category-header {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .subcategory-list {
+    margin-left: 20px;
+    list-style: disc;
+  }
+  .subcategories li:hover {
+    background-color: none!important;
+  }
+</style>
+
+
+{% block scripts %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".categorys").forEach(function (categoryBlock) {
+    const toggleBtn = categoryBlock.querySelector(".toggle-btn");
+    if (!toggleBtn) return; // agar toggle yo‘q bo‘lsa, ishlama
+
+    const list1Items = categoryBlock.querySelectorAll(".list1 li");
+    const list2 = categoryBlock.querySelector(".list2");
+    const totalCount = parseInt(categoryBlock.dataset.count);
+
+    let expanded = false;
+
+    toggleBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      if (!expanded) {
+        list1Items.forEach((li, index) => {
+          if (index >= 2 && index < list1Items.length - 1) {
+            li.classList.remove("hidden");
+          }
+        });
+        list2.style.display = "none";
+        toggleBtn.textContent = "Yopish";
+        expanded = true;
+      } else {
+        list1Items.forEach((li, index) => {
+          if (index >= 2 && index < list1Items.length - 1) {
+            li.classList.add("hidden");
+          }
+        });
+        list2.style.display = "block";
+        const remaining = totalCount - 2;
+        toggleBtn.textContent = `Yana ${remaining} ta xizmatlar`;
+        expanded = false;
+      }
+    });
+  });
+});
+
+function toggleSubcategories(slug) {
+    const subcatList = document.getElementById('subcat-' + slug);
+    const icon = document.getElementById('icon-' + slug);
+    
+    if (subcatList.style.display === 'none') {
+      subcatList.style.display = 'block';
+      icon.classList.remove('fa-chevron-right');
+      icon.classList.add('fa-chevron-down');
+    } else {
+      subcatList.style.display = 'none';
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-right');
+    }
+  }
+
+  function toggleSubcategories(slug) {
+  const subcatList = document.getElementById('subcat-' + slug);
+  const icon = document.getElementById('icon-' + slug);
+
+  if (subcatList.style.display === 'none') {
+    // Ochish
+    icon.classList.remove('fa-chevron-right');
+    icon.classList.add('fa-chevron-down');
+
+    // Faqat 1-marta yuklash
+    if (subcatList.children.length === 0) {
+      fetch(`/get-subcategories/${slug}/`)
+        .then(response => response.json())
+        .then(data => {
+          data.subcategories.forEach(sub => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = `/categories/${sub.slug}/`;
+            a.textContent = sub.name;
+            li.appendChild(a);
+            subcatList.appendChild(li);
+          });
+          subcatList.style.display = 'block';
+        });
+    } else {
+      subcatList.style.display = 'block';
+    }
+  } else {
+    // Yopish
+    subcatList.style.display = 'none';
+    icon.classList.remove('fa-chevron-down');
+    icon.classList.add('fa-chevron-right');
+  }
+}
+
+</script>
+
+
+{% endblock %}
+
+
+
+
+{% endblock content %}

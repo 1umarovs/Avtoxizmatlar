@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Ro’yhatdan o’tish{% endblock %}
+{% block content %}
+
+
+    <main>
+        <div class="opacity"></div>
+        <section class="login">
+            <div class="container">
+                <div class="login__items">
+                    <div class="login__items__title">
+                        <h3>Shaxsiy ma’lumotlar</h3>
+                        <p>Xizmat ko’rsatish turini va xizmatlaringiz haqida ma’lumotlarni to’ldiring, bu orqali
+                            mijozlar sizni tezroq va osonroq topa olishadi. Avvaldan profilingiz bormi ? U holda
+                            shunchaki <a href="{% url 'Users:login' %}">kiring.</a></p>
+                    </div>
+                    <form class="login__items__form" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_type" value="{{ request.GET.type }}">
+                        
+                        <div>
+                            <span>Familya</span>
+                            <input type="text" name="last_name" required>
+                        </div>
+                        <div>
+                            <span>Ism</span>
+                            <input type="text" name="first_name" required>
+                        </div>
+                        <div>
+                            <span>Telefon</span>
+                            <input id="phoneNumberInput" name="phone" onkeyup="formatPhoneNumber();" type="text" maxlength="12" required>
+                        </div>
+                        <div>
+                            <span>Адрес электронной почты</span>
+                            <input type="email" name="email" required>
+                        </div>
+                        <div>
+                            <span>Parol</span>
+                            <input type="password" name="password1" id="password1" onkeyup="checkPasswordMatch();" required>
+                        </div>
+                        <div>
+                            <span>Parol takroran *</span>
+                            <input type="password" name="password2" id="password2" onkeyup="checkPasswordMatch();" required>
+                            <div id="passwordMatch"></div>
+                        </div>
+                        <div class="check">
+                            <input type="checkbox" id="save" required>
+                            <label for="save">
+                                Shaxsiy ma’lumotlarimni e’lonlar oynasida joylanishiga va tarqatilishiga roziman
+                            </label>
+                        </div>
+                        <button type="submit">Ro’yhatdan o’tish</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scroll Up Start -->
+        <div id="scrollUp" class="scrollUp">
+            <span>&uarr;</span>
+        </div>
+        <!-- Scroll Up End -->
+    </main>
+
+
+
+
+{% endblock %}

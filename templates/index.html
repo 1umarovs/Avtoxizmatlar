@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+    <main>
+        <div class="opacity"></div>
+        <!-- Intro Start -->
+        <section class="intro">
+            <div class="container">
+                <div class="intro__left">
+                    <h2>Mashinangiz uchun ustaxonani oson toping</h2>
+                    <a href="/">Ustaxonalar topish</a>
+                </div>
+            </div>
+        </section>
+        <!-- Intro End -->
+
+        <!-- About Start -->
+        <section class="about" id="about">
+            <div class="container">
+                <p class="title">avtoxizmatlar.uz - bu haydovchilar uchun xizmatlar topish xizmat ko’rsatuvchilar uchun
+                    esa oson mijoz topish mumkin bo’lgan portal</p>
+                <div class="item">
+                    <div class="item__left">
+                        <p>Mashinangizdagi muammolar va nosozliklarga qarab o’zingizga yaqin bo’lgan sifatli xizmat
+                            ko’rsatuvchi ustaxonani toping.</p>
+                    </div>
+                    <div class="item__right">
+                        <ul>
+                            <li>
+                                <i class="fa-solid fa-car"></i>
+                                <p>Avtoustaxonalar ro’yhati</p>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-clock"></i>
+                                <p>Qisqa vaqt ichida</p>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-star"></i>
+                                <p>Mijozlar fikrlari orqali</p>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-gear"></i>
+                                <p>Ehtiyot qismlari do’konlari</p>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-stethoscope"></i>
+                                <p>Diagnostika markazlari</p>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-broom"></i>
+                                <p>Boshqa xizmatlar</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- About End -->
+
+        <!-- Register Start -->
+        <section class="register" id="register">
+            <div class="container">
+                <div class="item">
+                    <p>Portaldan foydalanish uchun ro’yhatdan o’ting.</p>
+                    <ul class="list">
+                        <a href="{% url 'Users:signup' %}?type=driver">
+                            <li>
+                                <p>Men haydovchiman</p>
+                            </li>
+                        </a>
+                        <a href="{% url 'Users:signup' %}?type=mechanic">
+                            <li>
+                                <p>Men xizmat ko’rsatuvchiman</p>
+                            </li>
+                        </a>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <!-- Register End -->
+
+        <!-- Type Start -->
+        <section class="type" id="type">
+            <div class="container">
+                <div class="item">
+                    <p>Muammoni turini tanlang</p>
+<ul id="list1" class="list1">
+    {% for service in service_types %}
+        <li class="list1__item">
+            <button onclick="toggleClass(this)" data-slug="{{ service.slug }}">
+                <img src="{{ service.icon.url }}" alt="">
+                <p>{{ service.name }}</p>
+            </button>
+
+            
+
+        </li>
+    {% endfor %}
+</ul>
+
+                    <ul class="list2">
+                        <ul class="subCategory" id="subCategoryList">
+                            <!-- Subkategoriyalar shu yerga dinamik yuklanadi -->
+                        </ul>
+                        {% for ran_service in services %}
+                        <a class="a" href="{% url 'main:category' ran_service.slug %}">
+                            <li>
+                                <p>{{ ran_service.name }}</p>
+                            </li>
+                        </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <!-- Type End -->
+
+        <!-- Scroll Up Start -->
+        <div id="scrollUp" class="scrollUp">
+            <span>&uarr;</span>
+        </div>
+        <!-- Scroll Up End -->
+    </main>
+
+
+<style>
+
+    .list1__item button img{
+        width:57px;
+        height:57px;
+        border-radius: 50%;
+        overflow: hidden;
+        object-fit: contain;
+    }
+    .list1{
+        display: flex;
+        justify-content: space-evenly;
+        overflow-x: auto;
+    }
+
+.type .item .list2 .a:nth-child(odd) {
+    background-image: none;
+}
+
+.type .item .list2 .a:nth-child(even) {
+    background-image: none;
+}
+
+
+
+</style>
+
+{% block scripts %}
+
+<script>
+    const getSubcategoriesUrl = "{% url 'main:get_subcategories_by_slug' 'dummy-slug' %}";
+</script>
+
+
+
+<script>
+window.toggleClass = function(button) {
+    const mainSlug = button.getAttribute('data-slug');
+    const url = getSubcategoriesUrl.replace('dummy-slug', mainSlug);
+
+    const list1Item = button.closest('.list1__item');
+    const allListItems = document.querySelectorAll('.list1__item');
+    const subCategory = document.getElementById('subCategoryList');
+
+    // Agar bosilgan item allaqachon active bo‘lsa, uni olib tashlaymiz
+    const isAlreadyActive = list1Item.classList.contains('subCategoryAct');
+
+    if (isAlreadyActive) {
+        list1Item.classList.remove('subCategoryAct');
+        subCategory.innerHTML = '';  // Subkategoriyalarni ham tozalaymiz
+        subCategory.classList.remove('subCategoryAct');
+        return; // Qaytamiz — fetch qilmaymiz
+    }
+
+    // Boshqa barcha itemlardan aktivlikni olib tashlaymiz
+    allListItems.forEach(item => item.classList.remove('subCategoryAct'));
+    list1Item.classList.add('subCategoryAct');
+
+    // Fetch orqali subkategoriyalarni olib kelamiz
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Serverdan noto‘g‘ri javob');
+            }
+            return response.json();
+        })
+        .then(data => {
+            subCategory.innerHTML = '';
+            data.subcategories.forEach(sub => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a href="/service/${sub.slug}/">
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <p>${sub.name}</p>
+                    </a>
+                `;
+                subCategory.appendChild(li);
+            });
+
+            subCategory.classList.add('subCategoryAct');
+        })
+        .catch(error => {
+            console.error("❌ Fetch xatosi:", error);
+            alert("Xatolik yuz berdi. So‘rov yuborilmadi.");
+        });
+}
+</script>
+
+
+{% endblock %}
+
+
+
+{% endblock %}

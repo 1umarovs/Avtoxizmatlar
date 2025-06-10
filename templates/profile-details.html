@@ -1,0 +1,326 @@
+{% extends 'base.html' %} {% load static %} {% load custom_filters %}
+{% block title %}Profil{% endblock title %} {% block content %}
+
+<main>
+  <div class="opacity"></div>
+  <section>
+    <div class="container">
+      <div class="category__list">
+        <div class="category__left">
+          <p id="title" class="title">
+            Profil
+            <i class="fa-solid fa-chevron-down"></i>
+          </p>
+          <ul id="list">
+            <li>
+              <a href="#">
+                <p>Reklama (TEST)</p>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <p>Profil foto</p>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <p>Manzil</p>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <p>Shirkat haqida</p>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <p>Mutaxasislik</p>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <p>Gallereya</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="category__items">
+          <h2>Profil</h2>
+          <p class="des">Profil e’lonlar oynasida</p>
+          <div class="category__items__list">
+            {% for profile in workshop %}
+            <div class="item">
+              <div class="item__left">
+                <img src="{{ profile.img.url }}" alt="" />
+                <ul>
+                  <li>
+                    <i class="fa-solid fa-house"></i>
+                    <p>2 ta joyda</p>
+                  </li>
+                  <li>
+                    <i class="fa-solid fa-clock"></i>
+                    <p>{{ profile.open_time }} - {{ profile.close_time }}</p>
+                  </li>
+                  <li>
+                    <i class="fa-solid fa-credit-card"></i>
+                    <p>Karta</p>
+                  </li>
+                  <li>
+                    <i class="fa-solid fa-money-bill"></i>
+                    <p>Naqd pul</p>
+                  </li>
+                </ul>
+              </div>
+              <div class="item__right">
+                <div class="item__right__top">
+                  <div class="reting">
+                    <div class="titles">
+                      <h3>{{ profile.company_name }}</h3>
+                      <b
+                        ><span><i class="fa-solid fa-star"></i></span
+                        >{{profile.avg_rating }} reyting</b
+                      >
+                    </div>
+                    <p></p>
+                  </div>
+                  <div
+                    class="categorys"
+                    data-count="{{ profile.services.count }}"
+                  >
+                    <ul class="list1">
+                      {% for service in profile.services.all %}
+                      <li class="{% if forloop.counter > 2 %}hidden{% endif %}">
+                        <a href="{% url 'main:category' service.slug %}"
+                          >{{ service.name }}</a
+                        >
+                      </li>
+                      {% endfor %} {% if profile.services.count > 2 %}
+                      <li class="toggle-btn-li">
+                        <a href="#" class="toggle-btn"
+                          >Yana {{ profile.services.count|add:"-2" }} ta
+                          xizmatlar</a
+                        >
+                      </li>
+                      {% endif %}
+                    </ul>
+                    <ul class="list2">
+                      {% for service in profile.services.all|slice:":2" %}
+                      <li><span></span>kelishilgan holda</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+                <div class="item__right__bottom">
+                  <a href="tel:{{ profile.phone1 }}">
+                    <i class="fa-solid fa-phone"></i>
+                    Telefon
+                  </a>
+                  <a href="">
+                    <i class="fa-solid fa-location-dot"></i>
+                    {{ profile.address }}
+                  </a>
+                  <a href="{% url 'Users:settings' profile.slug %}">
+                    <i class="fa-solid fa-gear"></i>
+                  </a>
+                  <a href="{% url 'Users:delete_workshop' profile.slug %}">
+                    <i class="fa-solid fa-trash"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="item d-flex">
+              <b><p>{{ profile.description }}</p></b>
+
+              <p class="py-3">
+                avtasoz 24/7 ishlaydimi : {% if profile.is_24_hours %}
+                <input type="checkbox" checked disabled />
+                {% else %}
+                <input type="checkbox" disabled />
+                {% endif %}
+              </p>
+            </div>
+
+            <div class="item">
+              {% if workshop.location_url %}
+              <iframe
+                src="{{ workshop.location_url|replace:'https://www.google.com/maps;https://www.google.com/maps/embed' }}" frameborder="0" width="100%" height="300" style="border: 0" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+              {% endif %}
+            </div>
+
+            {% endfor %}
+
+            <div class="detail__addres">
+              <div id="info" class="title">
+                <h3>Xizmat ko’rsatuvchi haqida</h3>
+                <i id="info-icon" class="fa-solid fa-chevron-down"></i>
+              </div>
+              <ul id="info-list" class="detail__list">
+                <form class="detail__form" method="POST">
+                  {% csrf_token %} {{ about_form.about }}
+                  <button type="submit" name="add_about">Saqlash</button>
+                </form>
+              </ul>
+            </div>
+
+            <div class="profil__gallery">
+              <div id="gallery" class="title">
+                <h3>Gallereya</h3>
+                <i id="gallery-icon" class="fa-solid fa-chevron-down"></i>
+              </div>
+              <div id="gallery-list" class="activee">
+                <ul class="profil__gallery__list">
+                  {% for image in gallery_images %}
+                  <li id="gallery-{{ image.id }}">
+                    <a
+                      href="javascript:void(0);"
+                      onclick="deleteGallery({{ image.id }})"
+                    >
+                      <i class="fa-solid fa-x"></i>
+                    </a>
+                    <img src="{{ image.image.url }}" alt="Park" />
+                  </li>
+                  {% endfor %}
+                </ul>
+                <form
+                  class="profil__form"
+                  enctype="multipart/form-data"
+                  method="POST"
+                >
+                  {% csrf_token %}
+                  <label class="file-input-container">
+                    <i class="fa-brands fa-squarespace"></i>
+                    Gallereya uchun foto qo’shish {{ gallery_form.image }}
+                  </label>
+                  <button class="btn" type="submit" name="add_gallery">
+                    Saqlash
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category__right">
+          <ul>
+            <div>
+              <img src="{% static './assets/img/category/up.png' %}" alt="" />
+              <b>Mijozlar sonini oshiring</b>
+              <p>
+                Reklama berish orqali xizmatlaringizni mijozlarga birinchilardan
+                bo’lib taklif qilishingiz mumkin.
+                <span>Hozirda bu servis ishga tushmadi.</span>
+              </p>
+              <a href="/">Reklama yoqish</a>
+            </div>
+            {% for review in reviews %}
+            <li class="revews">
+              <div class="items">
+                <img
+                  src="{% static './assets/img/home/register1.png' %}"
+                  alt=""
+                />
+                <div>
+                  <p>{{ review.username }}</p>
+                  <ul>
+                    <li class="star-act"><i class="fa-solid fa-star"></i></li>
+                    <li class="star-act"><i class="fa-solid fa-star"></i></li>
+                    <li><i class="fa-solid fa-star"></i></li>
+                    <li><i class="fa-solid fa-star"></i></li>
+                    <li><i class="fa-solid fa-star"></i></li>
+                  </ul>
+                </div>
+              </div>
+              <p class="text">{{ review.comment }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scroll Up Start -->
+  <div id="scrollUp" class="scrollUp">
+    <span>&uarr;</span>
+  </div>
+  <!-- Scroll Up End -->
+
+  <script>
+    function deleteGallery(id) {
+      fetch(`/users/delete-gallery/${id}/`, {
+        method: "GET",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            const element = document.getElementById(`gallery-${id}`);
+            if (element) {
+              element.remove();
+            }
+          } else {
+            alert("Rasm o‘chirilmadi.");
+          }
+        })
+        .catch((error) => {
+          console.error("Xatolik:", error);
+        });
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".categorys").forEach(function (categoryBlock) {
+        const toggleBtn = categoryBlock.querySelector(".toggle-btn");
+        if (!toggleBtn) return; // agar toggle yo‘q bo‘lsa, ishlama
+
+        const list1Items = categoryBlock.querySelectorAll(".list1 li");
+        const list2 = categoryBlock.querySelector(".list2");
+        const totalCount = parseInt(categoryBlock.dataset.count);
+
+        let expanded = false;
+
+        toggleBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          if (!expanded) {
+            list1Items.forEach((li, index) => {
+              if (index >= 2 && index < list1Items.length - 1) {
+                li.classList.remove("hidden");
+              }
+            });
+            list2.style.display = "none";
+            toggleBtn.textContent = "Yopish";
+            expanded = true;
+          } else {
+            list1Items.forEach((li, index) => {
+              if (index >= 2 && index < list1Items.length - 1) {
+                li.classList.add("hidden");
+              }
+            });
+            list2.style.display = "block";
+            const remaining = totalCount - 2;
+            toggleBtn.textContent = `Yana ${remaining} ta xizmatlar`;
+            expanded = false;
+          }
+        });
+      });
+    });
+  </script>
+
+  <style>
+    .hidden {
+      display: none;
+    }
+    .d-flex {
+      display: flex;
+
+      justify-content: space-between;
+      flex-direction: column;
+    }
+  </style>
+</main>
+
+{% endblock %}

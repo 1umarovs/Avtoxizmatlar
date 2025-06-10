@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Ro’yhatdan o’tish{% endblock %}
+{% block content %}
+
+
+
+    <main>
+        <div class="opacity"></div>
+        <section class="login">
+            <div class="container">
+                <div class="login__items">
+                    <div class="signup__items__title">
+                        <h2>Avtoxizmatlarga kirish</h2>
+                    </div>
+                    <form class="login__items__form" action="{% url 'Users:login' %}" method="post">
+                        {% csrf_token %}
+                        <div>
+                            <span>Telefon</span>
+                            <input name="phone" id="phoneNumberInput" onkeyup="formatPhoneNumber();" type="text" maxlength="12">
+                        </div>
+                        <div>
+                            <span>Parol</span>
+                            <input name="password" type="password" id="password1" onkeyup="checkPasswordMatch();">
+                        </div>
+                        {% if error %}
+                            <p style="color: red;">{{ error }}</p>
+                        {% endif %}
+                        <p>Shaxsiy profil yo’qmi? Unda <a href="{% url 'Users:signup' %}">ro’yhatdan o’ting.</a> Agar parol esdan chiqgan
+                            bo’lsa uni tiklash uchun mana <a href="{% url 'Users:password_reset' %}">bu yerga</a> bosing.</p>
+                        <button type="submit">Kirish</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scroll Up Start -->
+        <div id="scrollUp" class="scrollUp">
+            <span>&uarr;</span>
+
+{% endblock %}
