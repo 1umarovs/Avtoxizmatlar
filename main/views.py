@@ -67,6 +67,7 @@ def get_subcategories_by_slug(request, main_slug):
 
 
 def search_workshops(request):
+    main_categories = MainService.objects.prefetch_related('service_types').all()
     query = request.GET.get('search', '')
     if query and len(query) >= 3 and request.method == 'GET':
         workshops = WorkshopProfile.objects.filter(
@@ -83,10 +84,12 @@ def search_workshops(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+
     context = {
         'workshops': page_obj,
         'reviews': reviews,
-        'query': query
+        'query': query,
+        'main_categories': main_categories
     }
 
     return render(request, 'category.html', context)
