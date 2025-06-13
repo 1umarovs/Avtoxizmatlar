@@ -198,7 +198,7 @@ window.toggleClass = function(button) {
             data.subcategories.forEach(sub => {
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    <a href="/service/${sub.slug}/">
+                    <a href="/categories/${sub.slug}/">
                         <i class="fa-solid fa-chevron-right"></i>
                         <p>${sub.name}</p>
                     </a>
